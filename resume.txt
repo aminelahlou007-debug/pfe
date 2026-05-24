@@ -1,0 +1,7 @@
+Project Summary
+
+Purpose: Wildflower Co. — a Next.js event-planning SPA to create and manage ceremonies, guests, vendors, and tasks.
+Main features: Dashboard, CRUD for events/guests/vendors/tasks, seeded demo data, safe client parsing, in-memory fallback when DB is unavailable.
+Architecture: Next.js (App Router) frontend + server route handlers for APIs; tries MongoDB for persistence, falls back to an in-memory store.
+Auth & data: NextAuth scaffold for auth; MongoDB driver for persistence (optional — fallback keeps app usable).
+Languages & tools: TypeScript, React, Next.js, Tailwind CSS, MongoDB (mongodb driver), NextAuth, pnpm, lucide-react, shadcn-style UI components.
