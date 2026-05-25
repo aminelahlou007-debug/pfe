@@ -10,7 +10,7 @@ A live demo is available at: https://your-demo-domain.example (replace with your
 Brief summary
 -------------
 
-Ceremonie helps couples and event planners manage ceremonies and guest lists. Key features include: authentication (NextAuth), MongoDB-backed persistence, an admin dashboard for tasks, guest management, vendor tracking, and a checkout flow for paid services. This repository contains the full Next.js app (app directory), reusable UI components (components), and server API routes (app/api).
+Ceremonie helps couples and event planners manage ceremonies and guest lists. Key features include a public demo landing page, a client-side role switch for guest/admin views, MongoDB-backed persistence, an admin dashboard for tasks, guest management, vendor tracking, and a checkout flow for paid services. This repository contains the full Next.js app (app directory), reusable UI components (components), and server API routes (app/api).
 
 ## Quick Start
 
@@ -38,8 +38,8 @@ pnpm dev
 ## Environment Variables
 
 - `MONGODB_URI` - MongoDB connection string
-- `NEXTAUTH_SECRET` - NextAuth signing secret
-- `NEXTAUTH_URL` - app URL used by NextAuth
+- `NEXTAUTH_SECRET` - not used in the current demo flow
+- `NEXTAUTH_URL` - not used in the current demo flow
 
 ## Deploying
 
@@ -49,6 +49,8 @@ Vercel is the easiest deployment target:
 2. Import the repo into Vercel.
 3. Add the environment variables listed above.
 4. Deploy the production branch.
+
+If Vercel still fails during install with `ERR_INVALID_THIS`, add `ENABLE_EXPERIMENTAL_COREPACK=1` to the Vercel environment variables and redeploy immediately after saving it.
 
 ## Notes
 

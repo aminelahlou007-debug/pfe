@@ -6,7 +6,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
   title: "Login | Wildflower Co.",
-  description: "Sign in as a guest customer to preview the purchase flow or as an admin to open the dashboard.",
+  description: "Choose a demo view and jump straight into the customer or admin experience.",
 };
 
 export default function LoginPage() {
@@ -25,20 +25,20 @@ export default function LoginPage() {
               Demo access
             </span>
             <div className="max-w-2xl space-y-4">
-              <h1 className="text-5xl font-display leading-tight lg:text-7xl">Choose guest mode or admin access.</h1>
-              <p className="text-lg text-muted-foreground lg:text-xl">Guests can continue into the fake checkout flow. Admins can sign in to access the full editing dashboard.</p>
+              <h1 className="text-5xl font-display leading-tight lg:text-7xl">Choose a view and enter instantly.</h1>
+              <p className="text-lg text-muted-foreground lg:text-xl">No account, no request, no delay. Pick guest or admin and open the matching demo space immediately.</p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-foreground/10 bg-card p-5">
                 <ShoppingBag className="h-5 w-5 text-[#eca8d6]" />
                 <h2 className="mt-4 text-lg font-display">Guest / Buyer</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Preview pricing, then unlock the purchase screen with the demo account.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Preview pricing, then open the purchase screen instantly.</p>
               </div>
               <div className="rounded-3xl border border-foreground/10 bg-card p-5">
                 <ShieldCheck className="h-5 w-5 text-[#eca8d6]" />
                 <h2 className="mt-4 text-lg font-display">Admin / Editor</h2>
-                <p className="mt-2 text-sm text-muted-foreground">Use the admin demo account to open the dashboard and edit the project.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Use the admin demo view to open the dashboard and edit the project.</p>
               </div>
             </div>
           </section>
