@@ -1,8 +1,11 @@
 {
   "name": "wildflower-co",
   "version": "0.1.0",
-  "packageManager": "pnpm@11",
+  "packageManager": "pnpm@11.2.2",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
