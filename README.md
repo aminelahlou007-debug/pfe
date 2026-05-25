@@ -2,6 +2,16 @@
 
 Ceremonie is a Next.js portfolio/demo project for event planning and ceremony management. It includes a public marketing site, a guest-facing mode, and an admin dashboard with authenticated demo flows.
 
+Live demo
+---------
+
+A live demo is available at: https://your-demo-domain.example (replace with your deployed URL).
+
+Brief summary
+-------------
+
+Ceremonie helps couples and event planners manage ceremonies and guest lists. Key features include: authentication (NextAuth), MongoDB-backed persistence, an admin dashboard for tasks, guest management, vendor tracking, and a checkout flow for paid services. This repository contains the full Next.js app (app directory), reusable UI components (components), and server API routes (app/api).
+
 ## Quick Start
 
 1. Install dependencies.
