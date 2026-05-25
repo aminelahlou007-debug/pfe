@@ -130,12 +130,18 @@ export function IntegrationsSection() {
       <div className={`relative left-1/2 -translate-x-1/2 w-screen -mt-16 transition-all duration-1000 delay-200 ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}>
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/connection-KeJwWPQvn6l0a7C48tCARYtNEdC92H.png"
-          alt=""
+        <video
           aria-hidden="true"
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="metadata"
+          poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/connection-KeJwWPQvn6l0a7C48tCARYtNEdC92H.png"
           className="w-full h-auto object-cover"
-        />
+        >
+          <source src="/videos/integrations-hero.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Integration grid — remonte sur l'image avec spacing mobile approprié */}

@@ -50,6 +50,8 @@ export function DevelopersSection() {
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2813%29-OQ2DiR3ElVsUg8kTvTL1kC5A3Q6maM.png"
           alt=""
           aria-hidden="true"
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover object-left-top"
         />
         {/* Fade left edge */}
@@ -72,22 +74,28 @@ export function DevelopersSection() {
           </span>
           <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
             Code your agents.
-            <br />
-            <span className="text-muted-foreground">Or let them code.</span>
-          </h2>
-        </div>
-
-        {/* Description + Features — left half only */}
-        <div
-          className={`max-w-[50%] transition-all duration-700 delay-100 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A powerful SDK for building, deploying, and orchestrating AI agents. 
-            Define behaviors in code or natural language.
-          </p>
-          <div className="grid grid-cols-2 gap-6">
+            <div
+              className={`absolute bottom-0 right-0 w-[55%] h-[85%] pointer-events-none transition-all duration-1000 ${
+                isVisible ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <video
+                aria-hidden="true"
+                muted
+                autoPlay
+                loop
+                playsInline
+                preload="metadata"
+                poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2813%29-OQ2DiR3ElVsUg8kTvTL1kC5A3Q6maM.png"
+                className="w-full h-full object-cover object-left-top"
+              >
+                <source src="/videos/developers-hero.mp4" type="video/mp4" />
+              </video>
+              {/* Fade left edge */}
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+              {/* Fade top edge */}
+              <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-transparent" />
+            </div>
             {features.map((feature, index) => (
               <div
                 key={feature.title}

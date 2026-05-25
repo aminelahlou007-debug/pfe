@@ -1,19 +1,46 @@
-# Ceremonie Project (PFE)
+# Ceremonie Project
 
-This is the Ceremonie project. Optimizations applied:
+Ceremonie is a Next.js portfolio/demo project for event planning and ceremony management. It includes a public marketing site, a guest-facing mode, and an admin dashboard with authenticated demo flows.
 
-- Enabled `reactStrictMode` and `swcMinify` in `next.config.mjs`.
-- Enabled Next.js image optimization (set `unoptimized: false`).
+## Quick Start
 
-To publish this repository to GitHub and deploy (recommended: Vercel):
-
-1. Create a GitHub repo named `pfe` and copy its remote URL.
-2. Link the remote and push:
+1. Install dependencies.
 
 ```bash
-git remote add origin <GITHUB_REMOTE_URL>
-git branch -M main
-git push -u origin main
+pnpm install
 ```
 
-3. Import the repo into Vercel, configure environment variables, and deploy.
+2. Copy `.env.example` to `.env.local` and fill in the values.
+
+3. Start the app.
+
+```bash
+pnpm dev
+```
+
+## Scripts
+
+- `pnpm dev` - start the development server
+- `pnpm build` - create a production build
+- `pnpm start` - run the production build locally
+- `pnpm lint` - run ESLint
+
+## Environment Variables
+
+- `MONGODB_URI` - MongoDB connection string
+- `NEXTAUTH_SECRET` - NextAuth signing secret
+- `NEXTAUTH_URL` - app URL used by NextAuth
+
+## Deploying
+
+Vercel is the easiest deployment target:
+
+1. Push the repository to GitHub.
+2. Import the repo into Vercel.
+3. Add the environment variables listed above.
+4. Deploy the production branch.
+
+## Notes
+
+- `node_modules/` and `.next/` are intentionally ignored and should not be committed.
+- `pnpm-lock.yaml` is the active lockfile for this repo.

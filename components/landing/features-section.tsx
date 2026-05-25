@@ -205,13 +205,19 @@ export function FeaturesSection() {
             </div>
 
             <div className="hidden lg:block relative w-[42%] shrink-0 overflow-hidden">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png"
-                alt=""
+              <video
                 aria-hidden="true"
+                muted
+                autoPlay
+                loop
+                playsInline
+                preload="metadata"
+                poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png"
                 className="absolute inset-0 w-full h-full object-cover object-center"
                 style={{ transform: "scaleX(-1)" }}
-              />
+              >
+                <source src="/videos/feature-hero.mp4" type="video/mp4" />
+              </video>
               <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent" />
             </div>
           </div>

@@ -2,9 +2,12 @@
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 
 const rawUri = process.env.MONGODB_URI?.trim();
-const uri = rawUri && /^mongodb(\+srv)?:\/\//i.test(rawUri)
+const isMongoUri = rawUri && /^mongodb(\+srv)?:\/\//i.test(rawUri);
+const uri = isMongoUri
   ? rawUri
-  : "mongodb://127.0.0.1:27017/wildflower-co";
+  : process.env.NODE_ENV === "production"
+    ? null
+    : "mongodb://127.0.0.1:27017/wildflower-co";
 const options = {};
 
 let client: MongoClient;
@@ -23,6 +26,9 @@ if (process.env.NODE_ENV === "development") {
   }
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
+  if (!uri) {
+    throw new Error("Missing or invalid MONGODB_URI in production.");
+  }
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);
   clientPromise = client.connect();

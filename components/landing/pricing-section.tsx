@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Zap } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const plans = [
   {
     name: "Starter",
     description: "For small intimate events",
-    price: { monthly: 0, annual: 0 },
+    price: { display: "$2,000", note: "one-time project fee" },
     features: [
       "1 active event",
       "Up to 50 guests",
@@ -21,7 +23,7 @@ const plans = [
   {
     name: "Professional",
     description: "For wedding planners & events",
-    price: { monthly: 49, annual: 39 },
+    price: { display: "$5,500", note: "one-time project fee" },
     features: [
       "5 active events",
       "Up to 500 guests each",
@@ -37,7 +39,7 @@ const plans = [
   {
     name: "Enterprise",
     description: "For agencies & large venues",
-    price: { monthly: null, annual: null },
+    price: { display: "Custom", note: "scope-based pricing" },
     features: [
       "Unlimited events",
       "Unlimited guests",
@@ -54,7 +56,6 @@ const plans = [
 ];
 
 export function PricingSection() {
-  const [isAnnual, setIsAnnual] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -133,21 +134,12 @@ export function PricingSection() {
 
                   {/* Price */}
                   <div className="mb-8">
-                    {plan.price.monthly !== null ? (
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-5xl lg:text-6xl font-display">
-                          ${isAnnual ? plan.price.annual : plan.price.monthly}
-                        </span>
-                        <span className="text-muted-foreground text-sm">/month</span>
-                      </div>
-                    ) : (
-                      <span className="text-4xl font-display">Custom</span>
-                    )}
-                    {plan.price.monthly !== null && plan.price.monthly > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2 font-mono">
-                        {isAnnual ? "billed annually" : "billed monthly"}
-                      </p>
-                    )}
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-5xl lg:text-6xl font-display">{plan.price.display}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 font-mono">
+                      {plan.price.note}
+                    </p>
                   </div>
 
                   {/* Features */}
@@ -161,16 +153,21 @@ export function PricingSection() {
                   </ul>
 
                   {/* CTA */}
-                  <button
+                  <Button
                     className={`w-full py-4 flex items-center justify-center gap-2 text-sm font-medium transition-all group ${
                       plan.highlight
                         ? "bg-foreground text-background hover:bg-foreground/90"
                         : "border border-foreground/20 text-foreground hover:border-foreground hover:bg-foreground/5"
                     }`}
+                    asChild
                   >
-                    {plan.cta}
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </button>
+                    <Link
+                      href={`/login?mode=customer&callbackUrl=${encodeURIComponent(`/checkout?plan=${plan.name.toLowerCase()}`)}`}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
             ))}

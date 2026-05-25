@@ -52,11 +52,18 @@ export function InfrastructureSection() {
             <div className={`w-48 lg:w-72 xl:w-80 shrink-0 transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/world-3i68QNWJwmO7W19ztZWbevAwJQHzYL.png"
-                alt="Global network sphere"
+              <video
+                aria-hidden="true"
+                muted
+                autoPlay
+                loop
+                playsInline
+                preload="metadata"
+                poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/world-3i68QNWJwmO7W19ztZWbevAwJQHzYL.png"
                 className="w-full h-full object-contain object-center"
-              />
+              >
+                <source src="/videos/global-sphere.mp4" type="video/mp4" />
+              </video>
             </div>
 
             {/* Titre + description empilés */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +16,18 @@ const navLinks = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [siteMode, setSiteMode] = useState<"guest" | "admin">("guest");
+
+  useEffect(() => {
+    const storedMode = window.localStorage.getItem("wildflower-site-mode");
+    if (storedMode === "admin") {
+      setSiteMode("admin");
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("wildflower-site-mode", siteMode);
+  }, [siteMode]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +36,14 @@ export function Navigation() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isAdminMode = siteMode === "admin";
+  const primaryHref = isAdminMode
+    ? "/login?mode=admin&callbackUrl=/dashboard"
+    : "/login?mode=customer&callbackUrl=/checkout";
+  const primaryLabel = isAdminMode ? "Admin login" : "Login to purchase";
+  const secondaryHref = isAdminMode ? "/dashboard" : "/#pricing";
+  const secondaryLabel = isAdminMode ? "Open dashboard" : "View pricing";
 
   return (
     <header
@@ -66,16 +86,47 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/dashboard" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
-              Dashboard
-            </Link>
+            <div className="rounded-2xl border border-foreground/15 bg-background/80 px-3 py-2 shadow-lg backdrop-blur-sm">
+              <div className="mb-2 flex items-center justify-between gap-4">
+                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                  Preview mode
+                </span>
+                <span className={`rounded-full px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${isAdminMode ? "bg-foreground text-background" : "bg-[#eca8d6]/10 text-[#eca8d6]"}`}>
+                  {isAdminMode ? "Admin active" : "Guest active"}
+                </span>
+              </div>
+              <div className="flex items-center rounded-full border border-foreground/10 bg-foreground/[0.03] p-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setSiteMode("guest")}
+                  className={`rounded-full px-3.5 py-2 transition-colors ${siteMode === "guest" ? "bg-foreground text-background shadow-sm" : "text-foreground/70 hover:text-foreground"}`}
+              >
+                Guest View
+              </button>
+              <button
+                type="button"
+                onClick={() => setSiteMode("admin")}
+                  className={`rounded-full px-3.5 py-2 transition-colors ${siteMode === "admin" ? "bg-foreground text-background shadow-sm" : "text-foreground/70 hover:text-foreground"}`}
+              >
+                Admin View
+              </button>
+              </div>
+            </div>
+            {isAdminMode && (
+              <Link href="/dashboard" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
+                Dashboard
+              </Link>
+            )}
             <Button
               size="sm"
               className={`rounded-full transition-all duration-500 ${isScrolled ? "bg-foreground hover:bg-foreground/90 text-background px-4 h-8 text-xs" : "bg-white hover:bg-white/90 text-black px-6"}`}
               asChild
             >
-              <Link href="/dashboard">Start Planning</Link>
+              <Link href={primaryHref}>{primaryLabel}</Link>
             </Button>
+            <Link href={secondaryHref} className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
+              {secondaryLabel}
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -104,6 +155,32 @@ export function Navigation() {
         style={{ top: 0 }}
       >
         <div className="flex flex-col h-full px-8 pt-28 pb-8">
+          <div className="mb-10 rounded-2xl border border-foreground/15 bg-background/95 p-3 text-xs self-start shadow-lg">
+            <div className="mb-2 flex items-center justify-between gap-4">
+              <span className="font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                Preview mode
+              </span>
+              <span className={`rounded-full px-2.5 py-1 font-mono uppercase tracking-[0.18em] ${isAdminMode ? "bg-foreground text-background" : "bg-[#eca8d6]/10 text-[#eca8d6]"}`}>
+                {isAdminMode ? "Admin active" : "Guest active"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/[0.03] p-1">
+            <button
+              type="button"
+              onClick={() => setSiteMode("guest")}
+              className={`rounded-full px-3.5 py-2 transition-colors ${siteMode === "guest" ? "bg-foreground text-background shadow-sm" : "text-foreground/70"}`}
+            >
+              Guest View
+            </button>
+            <button
+              type="button"
+              onClick={() => setSiteMode("admin")}
+              className={`rounded-full px-3.5 py-2 transition-colors ${siteMode === "admin" ? "bg-foreground text-background shadow-sm" : "text-foreground/70"}`}
+            >
+              Admin View
+            </button>
+            </div>
+          </div>
           {/* Navigation Links */}
           <div className="flex-1 flex flex-col justify-center gap-8">
             {navLinks.map((link, i) => (
@@ -137,14 +214,14 @@ export function Navigation() {
               onClick={() => setIsMobileMenuOpen(false)}
               asChild
             >
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href={secondaryHref}>{secondaryLabel}</Link>
             </Button>
             <Button 
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
               asChild
             >
-              <Link href="/dashboard">Start Planning</Link>
+              <Link href={primaryHref}>{primaryLabel}</Link>
             </Button>
           </div>
         </div>

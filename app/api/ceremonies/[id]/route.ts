@@ -3,53 +3,62 @@ import { getCollection } from "@/lib/mongodb";
 import { CeremonyRecord } from "@/lib/site-data";
 import { toClientDoc, toObjectId } from "@/lib/api-helpers";
 import { deleteFallback, getFallback, updateFallback } from "@/lib/resource-store";
+import { ceremonyUpdateSchema } from "@/lib/validation";
+import { jsonError, noStoreHeaders, readJsonBody, requireAdmin } from "@/lib/security";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { id } = await params;
   const collection = await getCollection<CeremonyRecord>("ceremonies");
   if (!collection) {
     const ceremony = getFallback("ceremonies", id);
     if (!ceremony) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(ceremony);
+    return NextResponse.json(ceremony, { headers: noStoreHeaders() });
   }
   const objectId = toObjectId(id);
   if (!objectId) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const ceremony = await collection.findOne({ _id: objectId });
   if (!ceremony) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(toClientDoc(ceremony));
+  return NextResponse.json(toClientDoc(ceremony), { headers: noStoreHeaders() });
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { id } = await params;
   const collection = await getCollection<CeremonyRecord>("ceremonies");
-  const body = (await request.json()) as Partial<CeremonyRecord>;
+  const body = await readJsonBody<unknown>(request);
+  if (!body) return jsonError("Invalid JSON body");
+  const parsed = ceremonyUpdateSchema.safeParse(body);
+  if (!parsed.success) return jsonError("Invalid ceremony data");
   if (!collection) {
-    const updated = updateFallback("ceremonies", id, body);
+    const updated = updateFallback("ceremonies", id, parsed.data);
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(updated);
+    return NextResponse.json(updated, { headers: noStoreHeaders() });
   }
   const objectId = toObjectId(id);
   if (!objectId) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-  const result = await collection.findOneAndUpdate(
-    { _id: objectId },
-    { $set: { ...body, updatedAt: new Date() } },
-    { returnDocument: "after" }
-  );
-  if (!result) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(toClientDoc(result));
+  const result = await collection.updateOne({ _id: objectId }, { $set: { ...parsed.data, updatedAt: new Date() } });
+  if (!result.matchedCount) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const updated = await collection.findOne({ _id: objectId });
+  if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(toClientDoc(updated), { headers: noStoreHeaders() });
 }
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
   const { id } = await params;
   const collection = await getCollection<CeremonyRecord>("ceremonies");
   if (!collection) {
     const deleted = deleteFallback("ceremonies", id);
     if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: noStoreHeaders() });
   }
   const objectId = toObjectId(id);
   if (!objectId) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const result = await collection.deleteOne({ _id: objectId });
   if (!result.deletedCount) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true }, { headers: noStoreHeaders() });
 }

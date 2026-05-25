@@ -39,11 +39,18 @@ export function FooterSection() {
     <footer className="relative bg-black">
       {/* Panoramic banner image */}
       <div className="relative w-full h-[340px] md:h-[420px] overflow-hidden">
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2810%29-UnDKstODkIENp5xqTYUEpt0Sm8tNOw.png"
-          alt="Bioluminescent landscape"
+        <video
+          aria-hidden="true"
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="metadata"
+          poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2810%29-UnDKstODkIENp5xqTYUEpt0Sm8tNOw.png"
           className="w-full h-full object-cover object-center"
-        />
+        >
+          <source src="/videos/footer-banner.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
       </div>

@@ -68,7 +68,7 @@ export function CtaSection() {
                     className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
                     asChild
                   >
-                    <Link href="/dashboard">
+                    <Link href="/login?mode=customer&callbackUrl=/checkout">
                       Start planning free
                       <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -77,8 +77,9 @@ export function CtaSection() {
                     size="lg"
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
+                    asChild
                   >
-                    Book a demo
+                    <Link href="#pricing">See pricing</Link>
                   </Button>
                 </div>
 
@@ -89,11 +90,18 @@ export function CtaSection() {
 
               {/* Right image */}
               <div className="hidden lg:flex items-end justify-center w-[600px] h-[650px] -mr-16">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-uAia6REvB137CQyHFCf0za3O6h2zKO.png"
-                  alt="Decorative tree"
+                <video
+                  aria-hidden="true"
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-uAia6REvB137CQyHFCf0za3O6h2zKO.png"
                   className="w-full h-full object-contain object-bottom"
-                />
+                >
+                  <source src="/videos/cta-tree.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
           </div>

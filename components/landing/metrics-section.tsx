@@ -270,12 +270,18 @@ export function MetricsSection() {
         <div className={`w-full mb-0 transition-all duration-1000 delay-200 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/real-time-graph-INFmn3u0MlUwvNPynoIhwxtPaPjxM5.png"
-            alt=""
+          <video
             aria-hidden="true"
+            muted
+            autoPlay
+            loop
+            playsInline
+            preload="metadata"
+            poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/real-time-graph-INFmn3u0MlUwvNPynoIhwxtPaPjxM5.png"
             className="w-full h-auto object-cover"
-          />
+          >
+            <source src="/videos/real-time-graph.mp4" type="video/mp4" />
+          </video>
         </div>
 
         {/* Metrics grid */}

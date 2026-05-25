@@ -7,8 +7,17 @@ const colors = ['red', 'green', 'blue'];
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [colorIndex, setColorIndex] = useState(0);
+  const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const touchDetected = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    if (touchDetected) {
+      setIsTouch(true);
+      return; // do not attach listeners on touch devices
+    }
+
     const onMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
@@ -24,6 +33,8 @@ const CustomCursor = () => {
       clearInterval(colorInterval);
     };
   }, []);
+
+  if (isTouch) return null;
 
   return (
     <div
