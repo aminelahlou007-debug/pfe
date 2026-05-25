@@ -1,7 +1,7 @@
 {
   "name": "wildflower-co",
   "version": "0.1.0",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@10.33.4",
   "private": true,
   "engines": {
     "node": "20.x"
