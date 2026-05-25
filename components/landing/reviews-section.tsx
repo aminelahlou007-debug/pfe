@@ -143,21 +143,21 @@ function StarRow() {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <article className="group min-w-[320px] max-w-[320px] lg:min-w-[360px] lg:max-w-[360px] rounded-[28px] border border-background/12 bg-background/5 p-6 backdrop-blur-sm shadow-[0_20px_80px_rgba(0,0,0,0.22)] transition-transform duration-300 hover:-translate-y-1 hover:border-background/25">
+    <article className="group min-w-[320px] max-w-[320px] lg:min-w-[360px] lg:max-w-[360px] rounded-[28px] border border-white/12 bg-white/[0.05] p-6 backdrop-blur-md shadow-[0_20px_80px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1 hover:border-white/22 hover:bg-white/[0.075]">
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-background/15 bg-background/10 text-sm font-semibold text-background/90">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-white/10 text-sm font-semibold text-white/95">
             {review.initial}
           </div>
           <div>
-            <p className="font-medium text-background">{review.name}</p>
-            <p className="text-sm text-background/55">{review.role}</p>
+            <p className="font-medium text-white">{review.name}</p>
+            <p className="text-sm text-white/60">{review.role}</p>
           </div>
         </div>
         <StarRow />
       </div>
 
-      <p className="text-[15px] leading-7 text-background/76">{review.quote}</p>
+      <p className="text-[15px] leading-7 text-white/78">{review.quote}</p>
     </article>
   );
 }
@@ -166,7 +166,7 @@ function ReviewTrack({ items, direction = "left" }: { items: Review[]; direction
   const loopedItems = [...items, ...items];
 
   return (
-    <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+    <div className="relative overflow-hidden">
       <div className={`flex w-max gap-5 py-4 ${direction === "left" ? "animate-marquee-left" : "animate-marquee-right"}`}>
         {loopedItems.map((review, index) => (
           <ReviewCard key={`${review.name}-${index}`} review={review} />
@@ -185,16 +185,16 @@ export function ReviewsSection() {
       <AsciiPattern />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div className="max-w-3xl mb-14 lg:mb-18">
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-background/40 mb-4">
-            <span className="w-12 h-px bg-background/20" />
+        <div className="max-w-3xl mb-12 lg:mb-16">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-white/45 mb-4">
+            <span className="w-12 h-px bg-white/18" />
             Reviews
           </span>
           <h2 className="text-4xl lg:text-5xl font-display leading-tight">
             Quiet praise from couples and planners
-            <span className="text-background/40"> who needed the day to feel easy.</span>
+            <span className="text-white/40"> who needed the day to feel easy.</span>
           </h2>
-          <p className="mt-5 max-w-2xl text-base lg:text-lg leading-7 text-background/60">
+          <p className="mt-5 max-w-2xl text-base lg:text-lg leading-7 text-white/60">
             A soft, moving wall of handwritten-style feedback that matches the site’s calm, premium feel.
           </p>
         </div>
