@@ -50,7 +50,7 @@ export function FakeCheckout({ plan }: Props) {
             Complete fake purchase
           </Button>
           <Button variant="outline" asChild className="rounded-full">
-            <Link href="/login?mode=customer">Back to login</Link>
+            <Link href="/">Back to home</Link>
           </Button>
         </div>
 

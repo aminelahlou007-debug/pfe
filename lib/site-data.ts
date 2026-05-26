@@ -1,3 +1,8 @@
+export type TimestampedRecord = {
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 export type GuestRecord = {
   name: string;
   email: string;
@@ -7,7 +12,7 @@ export type GuestRecord = {
   dietary: string;
   plusOne: boolean;
   notes: string;
-};
+} & TimestampedRecord;
 
 export type VendorReview = {
   id: string;
@@ -28,7 +33,7 @@ export type VendorRecord = {
   status: "Active" | "Pending" | "Inactive";
   description: string;
   reviews: VendorReview[];
-};
+} & TimestampedRecord;
 
 export type TaskRecord = {
   title: string;
@@ -39,7 +44,7 @@ export type TaskRecord = {
   status: "Todo" | "In Progress" | "Done";
   assignee: string;
   category: string;
-};
+} & TimestampedRecord;
 
 export type CeremonyRecord = {
   name: string;
@@ -51,7 +56,7 @@ export type CeremonyRecord = {
   expectedGuests: string;
   budget: string;
   description: string;
-};
+} & TimestampedRecord;
 
 export const defaultGuests: GuestRecord[] = [
   { name: "Sarah Miller", email: "sarah@email.com", phone: "(555) 123-4567", ceremony: "Johnson Wedding", rsvp: "Confirmed", dietary: "Vegetarian", plusOne: true, notes: "" },

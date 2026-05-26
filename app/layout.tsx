@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import CustomCursor from '@/components/ui/custom-cursor';
+import { ChatbotWidget } from '@/components/chatbot/chatbot-widget';
 
 const instrumentSans = Instrument_Sans({ 
   subsets: ["latin"],
@@ -25,9 +27,6 @@ export const metadata: Metadata = {
   description: 'Wildflower Co. — the event planning platform to plan weddings, corporate events, and celebrations with elegance and precision.',
   generator: 'Next.js',
 }
-
-import CustomCursor from '@/components/ui/custom-cursor';
-// ... existing code ...
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,6 +40,7 @@ export default function RootLayout({
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <CustomCursor />
         {children}
+        <ChatbotWidget />
         <Analytics />
       </body>
     </html>

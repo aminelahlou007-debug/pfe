@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { OptionalUnlessRequiredId } from "mongodb";
 import { getCollection } from "@/lib/mongodb";
 import { defaultCeremonies, defaultGuests, defaultTasks, defaultVendors } from "@/lib/site-data";
 import { listFallback } from "@/lib/resource-store";
@@ -8,7 +9,8 @@ async function ensureSeeded<T extends Record<string, unknown>>(name: string, def
   const collection = await getCollection<T>(name);
   if (!collection) return null;
   if ((await collection.countDocuments()) === 0) {
-    await collection.insertMany(defaults.map((item) => ({ ...item, createdAt: new Date(), updatedAt: new Date() })));
+    const seededDocs = defaults.map((item) => ({ ...item, createdAt: new Date(), updatedAt: new Date() })) as unknown as OptionalUnlessRequiredId<T>[];
+    await collection.insertMany(seededDocs);
   }
   return collection;
 }

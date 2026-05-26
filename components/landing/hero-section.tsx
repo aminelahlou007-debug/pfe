@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const words = ["celebrate", "organize", "remember", "cherish"];
 
@@ -160,33 +163,57 @@ export function HeroSection() {
       
       <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 lg:px-12 py-32 lg:py-40">
         <div className="lg:max-w-[55%]">
-        {/* Eyebrow */}
-        <div 
-          className={`mb-8 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-white/60">
-            <span className="w-8 h-px bg-white/30" />
-            Your event, perfectly orchestrated
-          </span>
-        </div>
-        
-        {/* Main headline */}
-        <div className="mb-12">
-          <h1 
-            className={`text-left text-[clamp(2rem,6vw,7rem)] font-display leading-[0.92] tracking-tight text-white transition-all duration-1000 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          {/* Eyebrow */}
+          <div 
+            className={`mb-8 transition-all duration-700 ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <span className="block whitespace-nowrap">Moments to</span>
-            <span className="block whitespace-nowrap">
-              <span className="relative inline-block">
-                <BlurWord word={words[wordIndex]} trigger={wordIndex} />
-              </span>
+            <span className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-mono text-white/70 backdrop-blur-sm">
+              <Sparkles className="h-3.5 w-3.5 text-[#eca8d6]" />
+              Your event, perfectly orchestrated
             </span>
-          </h1>
-        </div>
+          </div>
+
+          {/* Main headline */}
+          <div className="mb-6">
+            <h1 
+              className={`text-left text-[clamp(2rem,6vw,7rem)] font-display leading-[0.92] tracking-tight text-white transition-all duration-1000 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+            >
+              <span className="block whitespace-nowrap">Moments to</span>
+              <span className="block whitespace-nowrap">
+                <span className="relative inline-block">
+                  <BlurWord word={words[wordIndex]} trigger={wordIndex} />
+                </span>
+              </span>
+            </h1>
+          </div>
+
+          <p
+            className={`max-w-2xl text-base leading-7 text-white/72 lg:text-lg transition-all duration-1000 delay-150 ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            Plan weddings, corporate events, and private celebrations in a clean, polished demo workspace designed for fast browsing and clear next steps.
+          </p>
+
+          <div
+            className={`mt-8 flex flex-wrap items-center gap-4 transition-all duration-1000 delay-300 ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            <Button asChild className="rounded-full bg-white text-black hover:bg-white/90">
+              <Link href="#pricing">
+                View pricing
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-full border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+              <Link href="/dashboard">Open dashboard</Link>
+            </Button>
+          </div>
         </div>
       </div>
       

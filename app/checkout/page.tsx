@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
 import { FakeCheckout } from "@/components/checkout/fake-checkout";
 
 export const metadata: Metadata = {
@@ -14,12 +11,6 @@ export default async function CheckoutPage({
 }: {
   searchParams?: { plan?: string };
 }) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || session.user?.role !== "customer") {
-    redirect("/login?mode=customer&callbackUrl=/checkout");
-  }
-
   return (
     <main className="min-h-screen bg-background px-6 py-10 lg:px-12">
       <div className="mx-auto max-w-6xl">

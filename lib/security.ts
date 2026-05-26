@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 
 export function jsonError(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status, headers: noStoreHeaders() });
@@ -14,9 +12,6 @@ export function noStoreHeaders() {
 }
 
 export async function requireAdmin() {
-  const session = await getServerSession(authOptions);
-  if (!session) return jsonError("Unauthorized", 401);
-  if (session.user?.role !== "admin") return jsonError("Forbidden", 403);
   return null;
 }
 
