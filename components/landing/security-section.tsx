@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { Shield, Lock, Eye, FileCheck } from "lucide-react";
 
 const securityFeatures = [
@@ -98,13 +99,13 @@ export function SecuritySection() {
             {/* Dynamic feature image with cross-fade — desktop only */}
             <div className="absolute inset-0 pointer-events-none items-center justify-end hidden lg:flex">
               {securityFeatures.map((feature, index) => (
-                <img
+                <Image
                   key={feature.image}
                   src={feature.image}
                   alt={feature.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute h-3/4 w-3/4 object-contain object-right transition-opacity duration-500"
+                  fill
+                  sizes="(max-width: 1024px) 0vw, 40vw"
+                  className="absolute object-contain object-right transition-opacity duration-500 p-10"
                   style={{ opacity: activeFeature === index ? 0.85 : 0 }}
                 />
               ))}

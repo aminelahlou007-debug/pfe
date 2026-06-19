@@ -1,10 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, Users, Building2, CheckSquare, Plus, ArrowUpRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { readJsonResponse } from "@/lib/safe-json";
+import { getDashboardSummary } from "@/lib/dashboard-summary";
 
 const recentActivity = [
   { action: "Guest RSVP confirmed", item: "Sarah Miller - Johnson Wedding", time: "2 min ago" },
@@ -13,31 +10,14 @@ const recentActivity = [
   { action: "New event created", item: "Garcia Celebration", time: "Yesterday" },
 ];
 
-export default function DashboardPage() {
-  const [stats, setStats] = useState([
-    { label: "Active Events", value: "0", change: "Live from MongoDB", icon: Calendar, href: "/dashboard/ceremonies" },
-    { label: "Total Guests", value: "0", change: "Live from MongoDB", icon: Users, href: "/dashboard/guests" },
-    { label: "Vendors", value: "0", change: "Live from MongoDB", icon: Building2, href: "/dashboard/vendors" },
-    { label: "Open Tasks", value: "0", change: "Live from MongoDB", icon: CheckSquare, href: "/dashboard/tasks" },
-  ]);
-  const [upcomingCeremonies, setUpcomingCeremonies] = useState<any[]>([]);
-
-  useEffect(() => {
-    const loadSummary = async () => {
-      const response = await fetch("/api/dashboard/summary");
-      const data = await readJsonResponse<{ stats?: any; upcomingCeremonies?: any[] }>(response);
-      if (!data?.stats) return;
-      setStats([
-        { label: "Active Events", value: String(data.stats.activeEvents ?? 0), change: "Live from MongoDB", icon: Calendar, href: "/dashboard/ceremonies" },
-        { label: "Total Guests", value: String(data.stats.totalGuests ?? 0), change: "Live from MongoDB", icon: Users, href: "/dashboard/guests" },
-        { label: "Vendors", value: String(data.stats.vendors ?? 0), change: "Live from MongoDB", icon: Building2, href: "/dashboard/vendors" },
-        { label: "Open Tasks", value: String(data.stats.openTasks ?? 0), change: "Live from MongoDB", icon: CheckSquare, href: "/dashboard/tasks" },
-      ]);
-      setUpcomingCeremonies(data.upcomingCeremonies ?? []);
-    };
-
-    loadSummary();
-  }, []);
+export default async function DashboardPage() {
+  const summary = await getDashboardSummary();
+  const stats = [
+    { label: "Active Events", value: String(summary.stats.activeEvents), change: "Live from MongoDB", icon: Calendar, href: "/dashboard/ceremonies" },
+    { label: "Total Guests", value: String(summary.stats.totalGuests), change: "Live from MongoDB", icon: Users, href: "/dashboard/guests" },
+    { label: "Vendors", value: String(summary.stats.vendors), change: "Live from MongoDB", icon: Building2, href: "/dashboard/vendors" },
+    { label: "Open Tasks", value: String(summary.stats.openTasks), change: "Live from MongoDB", icon: CheckSquare, href: "/dashboard/tasks" },
+  ];
 
   return (
     <div className="space-y-8">
@@ -85,7 +65,7 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="space-y-4">
-            {upcomingCeremonies.map((ceremony) => (
+            {summary.upcomingCeremonies.map((ceremony) => (
               <div 
                 key={ceremony.name}
                 className="flex items-center justify-between p-4 bg-background border border-foreground/5 hover:border-foreground/10 transition-colors"

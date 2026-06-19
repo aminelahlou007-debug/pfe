@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Loader2, MessageSquare, Send, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,7 @@ const starterMessages: ChatMessage[] = [
 ];
 
 const STORAGE_KEY = "wildflower_chat_messages_v1";
+const MAX_CLIENT_MESSAGES = 30;
 
 export function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,10 +41,12 @@ export function ChatbotWidget() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as ChatMessage[];
-        setMessages(parsed.length ? parsed : starterMessages);
+        const cleaned = parsed
+          .filter((message) => message && typeof message.content === "string")
+          .slice(-MAX_CLIENT_MESSAGES);
+        setMessages(cleaned.length ? cleaned : starterMessages);
       }
     } catch {
-      // ignore
     }
   }, []);
 
@@ -51,17 +54,27 @@ export function ChatbotWidget() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     } catch {
-      // ignore
     }
   }, [messages]);
 
-  const canSend = useMemo(() => input.trim().length > 0 && !isSending, [input, isSending]);
+  const canSend = input.trim().length > 0 && !isSending;
 
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const appendAssistantMessage = useCallback((content: string) => {
+    setMessages((current) => [
+      ...current,
+      { role: "assistant", content, createdAt: new Date().toISOString() },
+    ]);
+  }, []);
+
+  const submitPrompt = useCallback(async () => {
     const prompt = input.trim();
     if (!prompt || isSending) return;
-    const nextMessages: ChatMessage[] = [...messages, { role: "user", content: prompt, createdAt: new Date().toISOString() }];
+
+    const nextMessages: ChatMessage[] = [
+      ...messages,
+      { role: "user", content: prompt, createdAt: new Date().toISOString() },
+    ].slice(-MAX_CLIENT_MESSAGES);
+
     setMessages(nextMessages);
     setInput("");
     setIsSending(true);
@@ -73,28 +86,34 @@ export function ChatbotWidget() {
         body: JSON.stringify({ messages: nextMessages }),
       });
 
+      if (!response.ok) {
+        appendAssistantMessage("The assistant is temporarily unavailable. Please try again.");
+        return;
+      }
+
       const data = (await response.json()) as { answer?: string };
       const answer = data.answer?.trim() || "I could not generate an answer just now.";
-      setMessages((current) => [...current, { role: "assistant", content: answer, createdAt: new Date().toISOString() }]);
+      appendAssistantMessage(answer);
     } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content: "The chat service is unavailable right now. Try again in a moment.",
-        },
-      ]);
+      appendAssistantMessage("The chat service is unavailable right now. Try again in a moment.");
     } finally {
       setIsSending(false);
     }
-  }
+  }, [appendAssistantMessage, input, isSending, messages]);
+
+  const sendMessage = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      await submitPrompt();
+    },
+    [submitPrompt]
+  );
 
   function clearChat() {
     setMessages(starterMessages);
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {
-      // ignore
     }
   }
 
@@ -194,7 +213,7 @@ export function ChatbotWidget() {
                       if (event.key === "Enter" && !event.shiftKey) {
                         event.preventDefault();
                         if (canSend) {
-                          void sendMessage(event as unknown as React.FormEvent<HTMLFormElement>);
+                          void submitPrompt();
                         }
                       }
                     }}

@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { buildChatKnowledgeBase } from "@/lib/chatbot-knowledge";
+import { defaultCeremonies } from "@/lib/site-data";
 
 type ChatMessage = {
   role: "system" | "user" | "assistant";
   content: string;
 };
+
+const MAX_MESSAGES = 12;
+const MAX_MESSAGE_LENGTH = 1200;
+const MODEL_TIMEOUT_MS = 9000;
+const CHAT_KNOWLEDGE_BASE = buildChatKnowledgeBase();
+const CEREMONY_GUEST_COUNTS = defaultCeremonies.map((ceremony) => ({
+  name: ceremony.name,
+  expectedGuests: Number(ceremony.expectedGuests || 0),
+}));
+const TOTAL_GUESTS = CEREMONY_GUEST_COUNTS.reduce((sum, ceremony) => sum + ceremony.expectedGuests, 0);
 
 function normalizeQuestion(input: string) {
   return input.toLowerCase();
@@ -12,6 +23,15 @@ function normalizeQuestion(input: string) {
 
 function fallbackAnswer(question: string) {
   const normalized = normalizeQuestion(question);
+
+  if (normalized.includes("guest") || normalized.includes("guests") || normalized.includes("guest count") || normalized.includes("counts")) {
+    const matchedCeremony = CEREMONY_GUEST_COUNTS.find((ceremony) => normalized.includes(ceremony.name.toLowerCase()));
+    if (matchedCeremony) {
+      return `${matchedCeremony.name} currently has an expected guest count of ${matchedCeremony.expectedGuests}.`;
+    }
+    const topCeremonies = CEREMONY_GUEST_COUNTS.map((ceremony) => `${ceremony.name}: ${ceremony.expectedGuests}`).join("; ");
+    return `Across demo ceremonies, the expected total guest count is ${TOTAL_GUESTS}. Breakdown: ${topCeremonies}.`;
+  }
 
   if (normalized.includes("purpose") || normalized.includes("what is this") || normalized.includes("what does")) {
     return "Wildflower Co. is an event planning and ceremony management app. It helps organize ceremonies, guests, vendors, tasks, and event details in one place.";
@@ -45,56 +65,111 @@ async function getModelAnswer(messages: ChatMessage[]) {
   if (!apiKey) return null;
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-  const knowledgeBase = buildChatKnowledgeBase();
   const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      input: [
-        {
-          role: "system",
-          content: [
-            {
-              type: "input_text",
-              text: [
-                "You are a helpful assistant for Wildflower Co.",
-                "Only answer using the provided knowledge base and the user's question.",
-                "If the answer is not in the knowledge base, say you do not know and suggest asking about the demo ceremonies, vendors, flowers, food, venues, or tasks.",
-                `Knowledge base:\n${knowledgeBase}`,
-              ].join("\n\n"),
-            },
-          ],
-        },
-        ...messages.map((message) => ({
-          role: message.role,
-          content: [{ type: "input_text", text: message.content }],
-        })),
-      ],
-      max_output_tokens: 250,
-      temperature: 0.2,
-      metadata: {
-        latestUserMessage,
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), MODEL_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
       },
-    }),
-  });
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        input: [
+          {
+            role: "system",
+            content: [
+              {
+                type: "input_text",
+                text: [
+                  "You are a helpful assistant for Wildflower Co.",
+                  "Only answer using the provided knowledge base and the user's question.",
+                  "If the answer is not in the knowledge base, say you do not know and suggest asking about the demo ceremonies, vendors, flowers, food, venues, or tasks.",
+                  `Knowledge base:\n${CHAT_KNOWLEDGE_BASE}`,
+                ].join("\n\n"),
+              },
+            ],
+          },
+          ...messages.map((message) => ({
+            role: message.role,
+            content: [{ type: "input_text", text: message.content }],
+          })),
+        ],
+        max_output_tokens: 250,
+        temperature: 0.2,
+        metadata: {
+          latestUserMessage,
+        },
+      }),
+    });
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     return null;
   }
 
-  const data = await response.json();
-  const text = data.output_text?.trim();
-  return typeof text === "string" && text.length > 0 ? text : null;
+  let data: any;
+  try {
+    data = await response.json();
+  } catch {
+    return null;
+  }
+
+  const topLevel = typeof data?.output_text === "string" ? data.output_text.trim() : "";
+  if (topLevel) return topLevel;
+
+  if (!Array.isArray(data?.output)) return null;
+
+  const parts: string[] = [];
+
+  for (const item of data.output) {
+    const contents = Array.isArray(item?.content) ? item.content : [];
+    for (const block of contents) {
+      const text = typeof block?.text === "string" ? block.text : block?.text?.value;
+      if (typeof text === "string") {
+        const cleaned = text.trim();
+        if (cleaned) parts.push(cleaned);
+      }
+    }
+  }
+
+  const combined = parts.join("\n").trim();
+  return combined || null;
+}
+
+function sanitizeMessages(input: unknown): ChatMessage[] {
+  if (!Array.isArray(input)) return [];
+
+  const sanitized: ChatMessage[] = [];
+
+  for (const item of input) {
+    if (!item || typeof item !== "object") continue;
+    const roleValue = (item as { role?: unknown }).role;
+    const contentValue = (item as { content?: unknown }).content;
+    if (typeof contentValue !== "string") continue;
+
+    const role: "user" | "assistant" = roleValue === "assistant" ? "assistant" : "user";
+    const content = contentValue.trim().slice(0, MAX_MESSAGE_LENGTH);
+    if (!content) continue;
+
+    sanitized.push({ role, content });
+  }
+
+  return sanitized.slice(-MAX_MESSAGES);
 }
 
 export async function POST(request: Request) {
-  let body: { messages?: ChatMessage[] } | null = null;
+  let body: { messages?: unknown } | null = null;
 
   try {
     body = await request.json();
@@ -102,11 +177,7 @@ export async function POST(request: Request) {
     body = null;
   }
 
-  const messages = Array.isArray(body?.messages)
-    ? body!.messages
-        .filter((message) => message && typeof message.content === "string")
-        .slice(-12)
-    : [];
+  const messages = sanitizeMessages(body?.messages);
 
   const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
 
@@ -117,5 +188,5 @@ export async function POST(request: Request) {
   const modelAnswer = await getModelAnswer(messages);
   const answer = modelAnswer ?? fallbackAnswer(latestUserMessage);
 
-  return NextResponse.json({ answer });
+  return NextResponse.json({ answer }, { headers: { "Cache-Control": "no-store" } });
 }
