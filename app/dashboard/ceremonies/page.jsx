@@ -12,6 +12,9 @@ export default function CeremoniesPage() {
   const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
+      setPage(1);
+    }, [search, filter]);
+    useEffect(() => {
         const loadCeremonies = async () => {
             const response = await fetch("/api/ceremonies");
             const data = await readJsonResponse(response);

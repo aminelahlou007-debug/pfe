@@ -13,6 +13,9 @@ export default function VendorsPage() {
   const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
+      setPage(1);
+    }, [search, categoryFilter]);
+    useEffect(() => {
         const loadVendors = async () => {
             const response = await fetch("/api/vendors");
             const data = await readJsonResponse(response);

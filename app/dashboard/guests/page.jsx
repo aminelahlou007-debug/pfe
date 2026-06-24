@@ -12,6 +12,9 @@ export default function GuestsPage() {
   const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
+      setPage(1);
+    }, [search, filter]);
+    useEffect(() => {
         const loadGuests = async () => {
             const response = await fetch("/api/guests");
             const data = await readJsonResponse(response);

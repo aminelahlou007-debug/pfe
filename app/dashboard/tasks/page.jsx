@@ -12,6 +12,9 @@ export default function TasksPage() {
   const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
+      setPage(1);
+    }, [search, filter]);
+    useEffect(() => {
         const loadTasks = async () => {
             const response = await fetch("/api/tasks");
             const data = await readJsonResponse(response);
