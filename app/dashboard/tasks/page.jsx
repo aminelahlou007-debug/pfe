@@ -9,6 +9,7 @@ export default function TasksPage() {
     const [tasks, setTasks] = useState([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const loadTasks = async () => {
@@ -25,6 +26,9 @@ export default function TasksPage() {
         const matchesFilter = filter === "all" || task.status.toLowerCase().replace(" ", "-") === filter;
         return matchesSearch && matchesFilter;
     });
+    const PAGE_SIZE = 5;
+    const pageCount = Math.max(1, Math.ceil(filteredTasks.length / PAGE_SIZE));
+    const paginatedTasks = filteredTasks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const handleDelete = (id) => {
         const deleteTask = async () => {
             await fetch(`/api/tasks/${id}`, { method: "DELETE" });
@@ -115,7 +119,7 @@ export default function TasksPage() {
 
       {/* Tasks List */}
       <div className="space-y-3">
-        {isLoading ? (<div className="p-8 text-center text-muted-foreground">Loading tasks...</div>) : filteredTasks.map((task) => (<div key={task.id} className={`group bg-card border border-foreground/10 hover:border-foreground/20 transition-all p-4 flex items-start gap-4 ${task.status === "Done" ? "opacity-60" : ""}`}>
+        {isLoading ? (<div className="p-8 text-center text-muted-foreground">Loading tasks...</div>) : paginatedTasks.map((task) => (<div key={task.id} className={`group bg-card border border-foreground/10 hover:border-foreground/20 transition-all p-4 flex items-start gap-4 ${task.status === "Done" ? "opacity-60" : ""}`}>
             <button onClick={() => toggleStatus(task.id)} className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${task.status === "Done"
                 ? "bg-[#eca8d6] border-[#eca8d6]"
                 : task.status === "In Progress"
@@ -176,6 +180,16 @@ export default function TasksPage() {
               </div>
             </div>
           </div>))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-muted-foreground">Showing {Math.min(filteredTasks.length, (page-1)*PAGE_SIZE+1)}-{Math.min(filteredTasks.length, page*PAGE_SIZE)} of {filteredTasks.length}</div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setPage((p) => Math.max(1, p-1))} className="px-3 py-1 bg-card border rounded" disabled={page === 1}>Prev</button>
+          <div className="text-sm">Page {page} of {pageCount}</div>
+          <button onClick={() => setPage((p) => Math.min(pageCount, p+1))} className="px-3 py-1 bg-card border rounded" disabled={page === pageCount}>Next</button>
+        </div>
       </div>
 
       {filteredTasks.length === 0 && (<div className="text-center py-12">

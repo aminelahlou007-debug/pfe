@@ -9,6 +9,7 @@ export default function CeremoniesPage() {
     const [ceremonies, setCeremonies] = useState([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const loadCeremonies = async () => {
@@ -25,6 +26,9 @@ export default function CeremoniesPage() {
         const matchesFilter = filter === "all" || ceremony.status.toLowerCase() === filter;
         return matchesSearch && matchesFilter;
     });
+    const PAGE_SIZE = 5;
+    const pageCount = Math.max(1, Math.ceil(filteredCeremonies.length / PAGE_SIZE));
+    const paginatedCeremonies = filteredCeremonies.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const handleDelete = (id) => {
         const deleteCeremony = async () => {
             await fetch(`/api/ceremonies/${id}`, { method: "DELETE" });
@@ -64,7 +68,7 @@ export default function CeremoniesPage() {
 
       {/* Ceremonies Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {isLoading ? (<div className="col-span-full p-8 text-center text-muted-foreground">Loading events...</div>) : (filteredCeremonies.map((ceremony) => (<div key={ceremony.id} className="group bg-card border border-foreground/10 hover:border-foreground/20 transition-all p-6">
+        {isLoading ? (<div className="col-span-full p-8 text-center text-muted-foreground">Loading events...</div>) : (paginatedCeremonies.map((ceremony) => (<div key={ceremony.id} className="group bg-card border border-foreground/10 hover:border-foreground/20 transition-all p-6">
               <div className="flex items-start justify-between mb-4">
                 <span className={`text-xs px-3 py-1 rounded-full font-mono ${ceremony.status === "Confirmed"
                 ? "bg-[#eca8d6]/10 text-[#eca8d6]"
@@ -116,6 +120,16 @@ export default function CeremoniesPage() {
                 </div>
               </Link>
             </div>)))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-muted-foreground">Showing {Math.min(filteredCeremonies.length, (page-1)*PAGE_SIZE+1)}-{Math.min(filteredCeremonies.length, page*PAGE_SIZE)} of {filteredCeremonies.length}</div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setPage((p) => Math.max(1, p-1))} className="px-3 py-1 bg-card border rounded" disabled={page === 1}>Prev</button>
+          <div className="text-sm">Page {page} of {pageCount}</div>
+          <button onClick={() => setPage((p) => Math.min(pageCount, p+1))} className="px-3 py-1 bg-card border rounded" disabled={page === pageCount}>Next</button>
+        </div>
       </div>
 
       {filteredCeremonies.length === 0 && (<div className="text-center py-12">
