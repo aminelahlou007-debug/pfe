@@ -9,6 +9,7 @@ export default function GuestsPage() {
     const [guests, setGuests] = useState([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const loadGuests = async () => {
@@ -26,6 +27,9 @@ export default function GuestsPage() {
         const matchesFilter = filter === "all" || guest.rsvp.toLowerCase() === filter;
         return matchesSearch && matchesFilter;
     });
+    const PAGE_SIZE = 5;
+    const pageCount = Math.max(1, Math.ceil(filteredGuests.length / PAGE_SIZE));
+    const paginatedGuests = filteredGuests.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const handleDelete = (id) => {
         const deleteGuest = async () => {
             await fetch(`/api/guests/${id}`, { method: "DELETE" });
@@ -105,7 +109,7 @@ export default function GuestsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredGuests.map((guest) => (<tr key={guest.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02] transition-colors">
+                {paginatedGuests.map((guest) => (<tr key={guest.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02] transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-medium">{guest.name}</div>
                     <div className="text-sm text-muted-foreground md:hidden">{guest.email}</div>
@@ -164,6 +168,16 @@ export default function GuestsPage() {
                 </tr>))}
             </tbody>
           </table>)}
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-muted-foreground">Showing {Math.min(filteredGuests.length, (page-1)*PAGE_SIZE+1)}-{Math.min(filteredGuests.length, page*PAGE_SIZE)} of {filteredGuests.length}</div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setPage((p) => Math.max(1, p-1))} className="px-3 py-1 bg-card border rounded" disabled={page === 1}>Prev</button>
+          <div className="text-sm">Page {page} of {pageCount}</div>
+          <button onClick={() => setPage((p) => Math.min(pageCount, p+1))} className="px-3 py-1 bg-card border rounded" disabled={page === pageCount}>Next</button>
         </div>
       </div>
 
