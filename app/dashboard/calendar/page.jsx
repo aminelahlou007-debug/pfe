@@ -82,10 +82,10 @@ export default function CalendarPage() {
                         {day}
                       </span>
                       <div className="mt-1 space-y-1">
-                        {dayEvents.slice(0, 2).map((event) => (<div key={event.id} className={`truncate rounded px-1 py-0.5 text-xs text-white ${event.color}`}>
+                        {dayEvents.slice(0, 5).map((event) => (<div key={event.id} className={`truncate rounded px-1 py-0.5 text-xs text-white ${event.color}`}>
                             {event.title}
                           </div>))}
-                        {dayEvents.length > 2 && (<div className="text-xs text-muted-foreground">+{dayEvents.length - 2} more</div>)}
+                        {dayEvents.length > 5 && (<div className="text-xs text-muted-foreground">+{dayEvents.length - 5} more</div>)}
                       </div>
                     </>)}
                 </div>);

@@ -3,10 +3,11 @@ import { Calendar, Users, Building2, CheckSquare, Plus, ArrowUpRight, TrendingUp
 import { Button } from "@/components/ui/button";
 import { getDashboardSummary } from "@/lib/dashboard-summary";
 const recentActivity = [
-    { action: "Guest RSVP confirmed", item: "Sarah Miller - Johnson Wedding", time: "2 min ago" },
-    { action: "Vendor contract signed", item: "Bloom Flowers Co.", time: "1 hour ago" },
-    { action: "Task completed", item: "Finalize menu selections", time: "3 hours ago" },
-    { action: "New event created", item: "Garcia Celebration", time: "Yesterday" },
+  { action: "Guest RSVP confirmed", item: "Sarah Miller - Johnson Wedding", time: "2 min ago" },
+  { action: "Vendor contract signed", item: "Bloom Flowers Co.", time: "1 hour ago" },
+  { action: "Task completed", item: "Finalize menu selections", time: "3 hours ago" },
+  { action: "New event created", item: "Garcia Celebration", time: "Yesterday" },
+  { action: "New order posted", item: "Order #A102 - 3 items", time: "Just now" },
 ];
 export default async function DashboardPage() {
     const summary = await getDashboardSummary();
